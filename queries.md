@@ -81,3 +81,56 @@
           		userAuditRatio
             }
         }
+
+******************
+{
+    user {
+        login
+        attrs
+        campus
+    }
+}
+*************
+
+{
+  transaction(
+    where: {
+      type: { _eq: "xp" }
+      _and: [
+        { path: { _like: "/bahrain/bh-module%" } },
+        { path: { _nlike: "/bahrain/bh-module/checkpoint%" } },
+        { path: { _nlike: "/bahrain/bh-module/piscine-js%" } }
+      ]
+    }
+    order_by: { createdAt: desc }
+    limit: 10
+  ) {
+    object {
+      name
+    }
+  }
+}
+****************
+{
+    transaction(
+      where: {
+        type: {
+          _iregex: "(^|[^[:alnum:]_])[[:alnum:]_]*skill_[[:alnum:]_]*($|[^[:alnum:]_])"
+        }
+      }
+    ) {
+      amount
+      type
+    }
+  }
+  *****************
+  {progress(
+      where: { isDone: { _eq: false }, object: { type: { _eq: "project" } } }
+      limit: 1
+    ) {
+      object {
+        name
+      }
+    }
+  }
+  ***********
