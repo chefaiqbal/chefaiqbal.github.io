@@ -37,8 +37,8 @@ form.addEventListener('submit', (event) => {
 
     // Check if the JWT is valid
     if (jwt && jwt.length > 0) {
-      // Store the JWT in cookies with a 1-day expiration
-      Cookies.set('jwt', jwt, { expires: 1 });
+      // Store the JWT in cookies with a 7-day expiration
+      Cookies.set('jwt', jwt, { expires: 7 });
 
       // Redirect the user to the "dashboard.html" page
       window.location.href = 'dashboard.html';

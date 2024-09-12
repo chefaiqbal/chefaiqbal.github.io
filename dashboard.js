@@ -27,6 +27,21 @@ const currentProjectQuery = `
   }
 `;
 
+// Define the GraphQL query to fetch the user's skills
+const skillsQuery = `
+  {
+    user {
+      transactions(where: {
+          type: {_ilike: "%skill%"}
+        }
+      ) {
+        type
+        amount
+      }
+    }
+  }
+`;
+
 // Function to fetch data from the GraphQL endpoint
 const fetchData = (query) => {
   return fetch(url, {
@@ -63,6 +78,24 @@ fetchData(currentProjectQuery)
     document.getElementById('project-name').textContent = currentProject;
   })
   .catch(error => console.error(error)); // Log any errors that occur during the fetch
+
+  // Fetch user's skills
+fetchData(skillsQuery)
+.then(data => {
+  console.log('Skills Query Result:', data); // Log the skills query result
+  // Extract the user's skills from the response
+  const skills = data.data.user[0]?.transactions || [];
+
+  // Update the skills section with the user's skills
+  const skillsList = document.getElementById('skills-list');
+  skillsList.innerHTML = ''; // Clear any existing skills
+  skills.forEach(skill => {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${skill.type}: ${skill.amount}`;
+    skillsList.appendChild(listItem);
+  });
+})
+.catch(error => console.error(error)); // Log any errors that occur during the fetch
 
 // Add event listener to the logout button
 document.getElementById('logout-button').addEventListener('click', () => {
