@@ -43,6 +43,24 @@ const auditQuery = `
   }
 `;
 
+// Define the correct GraphQL query to fetch the user's XP
+const xpQuery = `
+  query Transaction_aggregate {
+    transaction_aggregate(
+      where: {
+        event: { path: { _eq: "/bahrain/bh-module" } }
+        type: { _eq: "xp" }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+  }
+`;
+
 // Define the GraphQL query to fetch the user's skills
 const skillsQuery = `
   {
@@ -127,7 +145,7 @@ fetchData(currentProjectQuery)
 // Fetch audit ratio, total audits done, and total audits received
 fetchData(auditQuery)
   .then(data => {
-    console.log('Audit Query Result:', data); // Log the audit query result
+    //console.log('Audit Query Result:', data); // Log the audit query result
     // Extract the audit information from the response
     const auditInfo = data.data.user[0];
 
@@ -147,6 +165,19 @@ fetchData(auditQuery)
     });
   })
   .catch(error => console.error(error)); // Log any errors that occur during the fetch  
+
+  // Fetch user's XP
+  fetchData(xpQuery)
+    .then(data => {
+      console.log('XP Query Result:', data); // Log the XP query result
+      // Extract the user's XP from the response
+      const xp = data.data.transaction_aggregate.aggregate.sum.amount || 0;
+  
+      // Update the XP section with the user's XP
+      document.getElementById('xp-value').textContent = xp;
+    })
+    .catch(error => console.error(error)); // Log any errors that occur during the fetch
+  
 
 // Fetch user's skills
 fetchData(skillsQuery)
