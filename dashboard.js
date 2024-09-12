@@ -32,6 +32,17 @@ const currentProjectQuery = `
   }
 `;
 
+// Define the GraphQL query to fetch the audit ratio, total audits done, and total audits received
+const auditQuery = `
+  {
+    user {
+      auditRatio
+      totalUp
+      totalDown
+    }
+  }
+`;
+
 // Define the GraphQL query to fetch the user's skills
 const skillsQuery = `
   {
@@ -112,6 +123,30 @@ fetchData(currentProjectQuery)
     document.getElementById('project-name').textContent = currentProject;
   })
   .catch(error => console.error(error)); // Log any errors that occur during the fetch
+
+// Fetch audit ratio, total audits done, and total audits received
+fetchData(auditQuery)
+  .then(data => {
+    console.log('Audit Query Result:', data); // Log the audit query result
+    // Extract the audit information from the response
+    const auditInfo = data.data.user[0];
+
+    // Create an array of audit information items
+    const auditInfoItems = [
+      `Audit Ratio: ${auditInfo.auditRatio}`,
+      `Total Audits Done: ${auditInfo.totalUp}`,
+      `Total Audits Received: ${auditInfo.totalDown}`
+    ];
+
+    // Update the audit info section with the audit information items
+    const auditInfoList = document.getElementById('audit-info-list');
+    auditInfoItems.forEach(item => {
+      const listItem = document.createElement('li');
+      listItem.textContent = item;
+      auditInfoList.appendChild(listItem);
+    });
+  })
+  .catch(error => console.error(error)); // Log any errors that occur during the fetch  
 
 // Fetch user's skills
 fetchData(skillsQuery)
