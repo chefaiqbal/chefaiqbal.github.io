@@ -1,89 +1,158 @@
-/* General styles */
+/* Global Styles */
+*, ::after, ::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    background-color: #f4f4f9;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-/* Bentobox container */
-.bentobox-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  max-width: 1200px;
-  width: 100%;
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.container {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 20px;
 }
 
-/* Bentobox item */
-.bentobox-item {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-/* Login form styles */
-#login-form {
-  grid-column: span 2;
+/* Login Form Styles */
+.login-form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
-#login-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
+
+.form {
+    display: flex;
+    flex-direction: column;
 }
-#login-form label {
-  display: block;
-  margin-bottom: 5px;
+
+.control {
+    margin-bottom: 20px;
 }
-#login-form input[type="text"],
-#login-form input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
 }
-#login-form input[type="submit"] {
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
 }
-#login-form input[type="submit"]:hover {
-  background-color: #0056b3;
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
 }
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
 #error-message {
-  color: red;
-  text-align: center;
+    color: red;
+    text-align: center;
+    margin-top: 10px;
 }
 
-/* Dashboard styles */
-#user-info, #current-project, #audit-info, #xp, #skills {
-  margin: 20px 0;
+.credits {
+    text-align: center;
+    margin-top: 20px;
 }
-#logout-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+.credits a {
+    color: #007bff;
+    text-decoration: none;
 }
-#logout-button:hover {
-  background-color: #c82333;
+
+.credits a:hover {
+    text-decoration: underline;
+}
+
+/* Dashboard Styles */
+.bentobox {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.bentobox-item {
+    flex: 1 1 calc(50% - 20px);
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bentobox-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.bentobox-item p,
+.bentobox-item ul {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.bentobox-item ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.bentobox-item ul li {
+    margin-bottom: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .bentobox-item {
+        flex: 1 1 100%;
+    }
+
+    .btn {
+        font-size: 14px;
+    }
 }
