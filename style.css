@@ -4,12 +4,19 @@ body {
   background-color: #f8f9fa;
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-/* Login form styles */
-#login-form {
-  max-width: 400px;
-  margin: 50px auto;
+/* Bentobox container */
+.bentobox-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  width: 100%;
   padding: 20px;
   background-color: #fff;
   border: 1px solid #ddd;
@@ -17,16 +24,27 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Bentobox item */
+.bentobox-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Login form styles */
+#login-form {
+  grid-column: span 2;
+}
 #login-form h2 {
   text-align: center;
   margin-bottom: 20px;
 }
-
 #login-form label {
   display: block;
   margin-bottom: 5px;
 }
-
 #login-form input[type="text"],
 #login-form input[type="password"] {
   width: 100%;
@@ -35,7 +53,6 @@ body {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
-
 #login-form input[type="submit"] {
   width: 100%;
   padding: 10px;
@@ -45,11 +62,9 @@ body {
   border-radius: 5px;
   cursor: pointer;
 }
-
 #login-form input[type="submit"]:hover {
   background-color: #0056b3;
 }
-
 #error-message {
   color: red;
   text-align: center;
@@ -59,7 +74,6 @@ body {
 #user-info, #current-project, #audit-info, #xp, #skills {
   margin: 20px 0;
 }
-
 #logout-button {
   display: block;
   margin: 20px auto;
@@ -70,7 +84,6 @@ body {
   border-radius: 5px;
   cursor: pointer;
 }
-
 #logout-button:hover {
   background-color: #c82333;
 }
