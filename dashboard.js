@@ -169,7 +169,7 @@ fetchData(auditQuery)
   // Fetch user's XP
   fetchData(xpQuery)
     .then(data => {
-      console.log('XP Query Result:', data); // Log the XP query result
+      //console.log('XP Query Result:', data); // Log the XP query result
       // Extract the user's XP from the response
       const xp = data.data.transaction_aggregate.aggregate.sum.amount || 0;
   
@@ -182,7 +182,7 @@ fetchData(auditQuery)
 // Fetch user's skills
 fetchData(skillsQuery)
   .then(data => {
-   // console.log('Skills Query Result:', data); // Log the skills query result
+    console.log('Skills Query Result:', data);
     // Extract the user's skills from the response
     const skills = data.data.user[0]?.transactions || [];
 
@@ -206,7 +206,11 @@ fetchData(skillsQuery)
         technicalSkills[skillType] += skillAmount;
       }
     });
+    console.log('Technical Skills:', technicalSkills); // Log technical skills
+    console.log('Technologies:', technologies); // Log technologies
 
+    //Uncomment the following code to update the skills section with the user's skills on dashboard
+    /*
     // Update the skills section with the user's skills
     const skillsList = document.getElementById('skills-list');
     skillsList.innerHTML = ''; // Clear any existing skills
@@ -232,6 +236,59 @@ fetchData(skillsQuery)
       listItem.textContent = `${skill}: ${amount}`;
       skillsList.appendChild(listItem);
     }
+      */
+
+    // Prepare data for the radar charts
+    const technicalSkillsLabels = Object.keys(technicalSkills);
+    const technicalSkillsData = Object.values(technicalSkills);
+    const technologiesLabels = Object.keys(technologies);
+    const technologiesData = Object.values(technologies);
+
+    // Create radar chart for technical skills
+    const technicalSkillsCtx = document.getElementById('technical-skills-chart').getContext('2d');
+    new Chart(technicalSkillsCtx, {
+      type: 'radar',
+      data: {
+        labels: technicalSkillsLabels,
+        datasets: [{
+          label: 'Technical Skills',
+          data: technicalSkillsData,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scale: {
+          ticks: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Create radar chart for technologies
+    const technologiesCtx = document.getElementById('technologies-chart').getContext('2d');
+    new Chart(technologiesCtx, {
+      type: 'radar',
+      data: {
+        labels: technologiesLabels,
+        datasets: [{
+          label: 'Technologies',
+          data: technologiesData,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scale: {
+          ticks: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
   })
   .catch(error => console.error(error)); // Log any errors that occur during the fetch
 

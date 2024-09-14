@@ -4,38 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
-    <div class="container">
+    <div class="container mt-5">
       <h2 id="welcome-message" class="text-center my-4">Welcome</h2>
       
-      <div class="bentobox">
-        <div id="user-info" class="bentobox-item">
-          <h3>Your Information:</h3>
-          <ul id="user-info-list"></ul>
+      <div class="row">
+        <div id="user-info" class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Your Information:</h3>
+              <ul id="user-info-list" class="list-unstyled"></ul>
+            </div>
+          </div>
         </div>
-        <div id="current-project" class="bentobox-item">
-          <h3>Current Project:</h3>
-          <p id="project-name"></p>
+        <div id="current-project" class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Current Project:</h3>
+              <p id="project-name"></p>
+            </div>
+          </div>
         </div>
-        <div id="audit-info" class="bentobox-item">
-          <h3>Audit Information:</h3>
-          <ul id="audit-info-list"></ul>
+        <div id="audit-info" class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Audit Information:</h3>
+              <ul id="audit-info-list" class="list-unstyled"></ul>
+            </div>
+          </div>
         </div>
-        <div id="xp" class="bentobox-item">
-          <h3>Your XP:</h3>
-          <p id="xp-value"></p>
+        <div id="xp" class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Your XP:</h3>
+              <p id="xp-value"></p>
+            </div>
+          </div>
         </div>
-        <div id="skills" class="bentobox-item">
-          <h3>Your Skills:</h3>
-          <ul id="skills-list"></ul>
+        <div id="skills" class="col-md-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">Your Skills:</h3>
+              <ul id="skills-list" class="list-unstyled"></ul>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Technical Skills</h4>
+                  <canvas id="technical-skills-chart"></canvas>
+                </div>
+                <div class="col-md-6">
+                  <h4>Technologies</h4>
+                  <canvas id="technologies-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
-      <button id="logout-button" class="btn block-cube block-cube-hover">Logout</button>
+      <button id="logout-button" class="btn btn-danger btn-block">Logout</button>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="dashboard.js"></script>
   </body>
 </html>
