@@ -183,8 +183,6 @@ const auditInfoItems = [
   `Total Audits Received: ${formattedTotalDown}`
 ];
 
-//Uncomment the following code to update the audit info section with the user's audit info on dashboard
-/*
 // Append items to the list
 const auditInfoList = document.getElementById('audit-info-list');
 auditInfoItems.forEach(item => {
@@ -192,7 +190,6 @@ auditInfoItems.forEach(item => {
   listItem.textContent = item;
   auditInfoList.appendChild(listItem);
 });
-*/
 
 // Update progress bars
 const totalAuditsDoneProgress = document.getElementById('total-audits-done-progress');
@@ -228,6 +225,11 @@ const displayXp = xp % 1000 >= 500 ? roundedXp : Math.floor(xp / 1000);
 
 document.getElementById('xp-value').textContent = `${displayXp} kB`;
 
+// Helper function to format skill names
+const formatSkillName = (skill) => {
+  return skill.replace('skill_', '').replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+};
+
 // Fetch user's skills
 fetchData(skillsQuery)
 .then(data => {
@@ -255,8 +257,8 @@ fetchData(skillsQuery)
       technicalSkills[skillType] += skillAmount;
     }
   });
-  //console.log('Technical Skills:', technicalSkills); // Log technical skills
-  //console.log('Technologies:', technologies); // Log technologies
+  console.log('Technical Skills:', technicalSkills); // Log technical skills
+  console.log('Technologies:', technologies); // Log technologies
 
   //Uncomment the following code to update the skills section with the user's skills on dashboard
   /*
@@ -271,7 +273,7 @@ fetchData(skillsQuery)
 
   for (const [skill, amount] of Object.entries(technicalSkills)) {
     const listItem = document.createElement('li');
-    listItem.textContent = `${skill}: ${amount}`;
+    listItem.textContent = `${formatSkillName(skill)}: ${amount}`;
     skillsList.appendChild(listItem);
   }
 
@@ -282,15 +284,15 @@ fetchData(skillsQuery)
 
   for (const [skill, amount] of Object.entries(technologies)) {
     const listItem = document.createElement('li');
-    listItem.textContent = `${skill}: ${amount}`;
+    listItem.textContent = `${formatSkillName(skill)}: ${amount}`;
     skillsList.appendChild(listItem);
   }
-    */
+  */
 
   // Prepare data for the radar charts
-  const technicalSkillsLabels = Object.keys(technicalSkills);
+  const technicalSkillsLabels = Object.keys(technicalSkills).map(formatSkillName);
   const technicalSkillsData = Object.values(technicalSkills);
-  const technologiesLabels = Object.keys(technologies);
+  const technologiesLabels = Object.keys(technologies).map(formatSkillName);
   const technologiesData = Object.values(technologies);
 
   // Create radar chart for technical skills
@@ -304,13 +306,16 @@ fetchData(skillsQuery)
         data: technicalSkillsData,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1
+        borderWidth: 1,
+        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+        pointRadius: 3
       }]
     },
     options: {
       scale: {
         ticks: {
-          beginAtZero: true
+          beginAtZero: true,
+          display: false // Hide the numbers
         }
       }
     }
@@ -327,17 +332,21 @@ fetchData(skillsQuery)
         data: technologiesData,
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
         borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
+        borderWidth: 1,
+        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+        pointRadius: 3
       }]
     },
     options: {
       scale: {
         ticks: {
-          beginAtZero: true
+          beginAtZero: true,
+          display: false // Hide the numbers
         }
       }
     }
   });
+
 })
   }
   catch (error) {
