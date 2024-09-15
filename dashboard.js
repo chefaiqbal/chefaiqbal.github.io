@@ -4,10 +4,19 @@ const url = 'https://learn.reboot01.com/api/graphql-engine/v1/graphql';
 // Get the JWT from the cookies
 const jwt = Cookies.get('jwt');
 
-// Define the GraphQL query to fetch user login
-const userQuery = `
+// Define the GraphQL query to fetch user ID
+const userIdQuery = `
   {
     user {
+      id
+    }
+  }
+`;
+
+// Define the GraphQL query to fetch user login and other details
+const userQuery = (userId) => `
+  {
+    user(where: { id: { _eq: "${userId}" } }) {
       login
       campus
       email
@@ -33,9 +42,9 @@ const currentProjectQuery = `
 `;
 
 // Define the GraphQL query to fetch the audit ratio, total audits done, and total audits received
-const auditQuery = `
+const auditQuery = (userId) => `
   {
-    user {
+    user(where: { id: { _eq: "${userId}" } }) {
       auditRatio
       totalUp
       totalDown
@@ -44,12 +53,13 @@ const auditQuery = `
 `;
 
 // Define the correct GraphQL query to fetch the user's XP
-const xpQuery = `
+const xpQuery = (userId) => `
   query Transaction_aggregate {
     transaction_aggregate(
       where: {
         event: { path: { _eq: "/bahrain/bh-module" } }
         type: { _eq: "xp" }
+        userId: { _eq: "${userId}" }
       }
     ) {
       aggregate {
@@ -93,12 +103,16 @@ const capitalizeFirstChar = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-// Fetch user login and campus
-fetchData(userQuery)
-  .then(data => {
-    //console.log('User Query Result:', data); // Log the user query result
-    // Extract the user information from the response
-    const userInfo = data.data.user[0];
+// Main function to fetch user ID and then other data
+const main = async () => {
+  try {
+    // Fetch user ID
+    const userIdData = await fetchData(userIdQuery);
+    const userId = userIdData.data.user[0].id;
+
+    // Fetch user login and other details
+    const userData = await fetchData(userQuery(userId));
+    const userInfo = userData.data.user[0];
 
     // Capitalize the first character of the campus
     userInfo.campus = capitalizeFirstChar(userInfo.campus);
@@ -127,170 +141,160 @@ fetchData(userQuery)
 
     // Update the welcome message with the user login
     document.getElementById('welcome-message').textContent = 'Welcome ' + userLogin;
-  })
-  .catch(error => console.error(error)); // Log any errors that occur during the fetch
 
-// Fetch current project
-fetchData(currentProjectQuery)
-  .then(data => {
-    //console.log('Current Project Query Result:', data); // Log the current project query result
-    // Extract the current project name from the response
-    const currentProject = data.data.progress[0]?.object.name || 'No current project';
-
-    // Update the current project section with the project name
+    // Fetch current project
+    const projectData = await fetchData(currentProjectQuery);
+    const currentProject = projectData.data.progress[0]?.object.name || 'No current project';
     document.getElementById('project-name').textContent = currentProject;
-  })
-  .catch(error => console.error(error)); // Log any errors that occur during the fetch
 
-// Fetch audit ratio, total audits done, and total audits received
-fetchData(auditQuery)
-  .then(data => {
-    //console.log('Audit Query Result:', data); // Log the audit query result
-    // Extract the audit information from the response
-    const auditInfo = data.data.user[0];
-
-    // Create an array of audit information items
+    // Fetch audit ratio, total audits done, and total audits received
+    const auditData = await fetchData(auditQuery(userId));
+    const auditInfo = auditData.data.user[0];
     const auditInfoItems = [
       `Audit Ratio: ${auditInfo.auditRatio}`,
       `Total Audits Done: ${auditInfo.totalUp}`,
       `Total Audits Received: ${auditInfo.totalDown}`
     ];
-
-    // Update the audit info section with the audit information items
     const auditInfoList = document.getElementById('audit-info-list');
     auditInfoItems.forEach(item => {
       const listItem = document.createElement('li');
       listItem.textContent = item;
       auditInfoList.appendChild(listItem);
     });
-  })
-  .catch(error => console.error(error)); // Log any errors that occur during the fetch  
 
-  // Fetch user's XP
-  fetchData(xpQuery)
-    .then(data => {
-      //console.log('XP Query Result:', data); // Log the XP query result
-      // Extract the user's XP from the response
-      const xp = data.data.transaction_aggregate.aggregate.sum.amount || 0;
-  
-      // Update the XP section with the user's XP
-      document.getElementById('xp-value').textContent = xp;
-    })
-    .catch(error => console.error(error)); // Log any errors that occur during the fetch
-  
+    // Fetch user's XP
+// Fetch user's XP
+const xpData = await fetchData(xpQuery(userId));
+console.log('XP Query Result:', xpData);
+const xp = xpData.data.transaction_aggregate.aggregate.sum.amount || 0;
+
+// Round the XP value
+const roundedXp = Math.ceil(xp / 1000);
+
+// Ensure values like 269,350 are not rounded up incorrectly
+const displayXp = xp % 1000 >= 500 ? roundedXp : Math.floor(xp / 1000);
+
+document.getElementById('xp-value').textContent = `${displayXp} kB`;
 
 // Fetch user's skills
 fetchData(skillsQuery)
-  .then(data => {
-    console.log('Skills Query Result:', data);
-    // Extract the user's skills from the response
-    const skills = data.data.user[0]?.transactions || [];
+.then(data => {
+  console.log('Skills Query Result:', data);
+  // Extract the user's skills from the response
+  const skills = data.data.user[0]?.transactions || [];
 
-    // Separate skills into Technical Skills and Technologies
-    const technicalSkills = {};
-    const technologies = {};
+  // Separate skills into Technical Skills and Technologies
+  const technicalSkills = {};
+  const technologies = {};
 
-    skills.forEach(skill => {
-      const skillType = skill.type;
-      const skillAmount = skill.amount;
+  skills.forEach(skill => {
+    const skillType = skill.type;
+    const skillAmount = skill.amount;
 
-      if (['skill_go', 'skill_js', 'skill_html', 'skill_css', 'skill_unix', 'skill_docker'].includes(skillType)) {
-        if (!technologies[skillType]) {
-          technologies[skillType] = 0;
-        }
-        technologies[skillType] += skillAmount;
-      } else if (['skill_prog', 'skill_algo', 'skill_front-end', 'skill_back-end'].includes(skillType)) {
-        if (!technicalSkills[skillType]) {
-          technicalSkills[skillType] = 0;
-        }
-        technicalSkills[skillType] += skillAmount;
+    if (['skill_go', 'skill_js', 'skill_html', 'skill_css', 'skill_unix', 'skill_docker'].includes(skillType)) {
+      if (!technologies[skillType]) {
+        technologies[skillType] = 0;
       }
-    });
-    console.log('Technical Skills:', technicalSkills); // Log technical skills
-    console.log('Technologies:', technologies); // Log technologies
-
-    //Uncomment the following code to update the skills section with the user's skills on dashboard
-    /*
-    // Update the skills section with the user's skills
-    const skillsList = document.getElementById('skills-list');
-    skillsList.innerHTML = ''; // Clear any existing skills
-
-    // Add Technical Skills to the list
-    const technicalSkillsHeader = document.createElement('h4');
-    technicalSkillsHeader.textContent = 'Technical Skills';
-    skillsList.appendChild(technicalSkillsHeader);
-
-    for (const [skill, amount] of Object.entries(technicalSkills)) {
-      const listItem = document.createElement('li');
-      listItem.textContent = `${skill}: ${amount}`;
-      skillsList.appendChild(listItem);
+      technologies[skillType] += skillAmount;
+    } else if (['skill_prog', 'skill_algo', 'skill_front-end', 'skill_back-end'].includes(skillType)) {
+      if (!technicalSkills[skillType]) {
+        technicalSkills[skillType] = 0;
+      }
+      technicalSkills[skillType] += skillAmount;
     }
+  });
+  console.log('Technical Skills:', technicalSkills); // Log technical skills
+  console.log('Technologies:', technologies); // Log technologies
 
-    // Add Technologies to the list
-    const technologiesHeader = document.createElement('h4');
-    technologiesHeader.textContent = 'Technologies';
-    skillsList.appendChild(technologiesHeader);
+  //Uncomment the following code to update the skills section with the user's skills on dashboard
+  /*
+  // Update the skills section with the user's skills
+  const skillsList = document.getElementById('skills-list');
+  skillsList.innerHTML = ''; // Clear any existing skills
 
-    for (const [skill, amount] of Object.entries(technologies)) {
-      const listItem = document.createElement('li');
-      listItem.textContent = `${skill}: ${amount}`;
-      skillsList.appendChild(listItem);
+  // Add Technical Skills to the list
+  const technicalSkillsHeader = document.createElement('h4');
+  technicalSkillsHeader.textContent = 'Technical Skills';
+  skillsList.appendChild(technicalSkillsHeader);
+
+  for (const [skill, amount] of Object.entries(technicalSkills)) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${skill}: ${amount}`;
+    skillsList.appendChild(listItem);
+  }
+
+  // Add Technologies to the list
+  const technologiesHeader = document.createElement('h4');
+  technologiesHeader.textContent = 'Technologies';
+  skillsList.appendChild(technologiesHeader);
+
+  for (const [skill, amount] of Object.entries(technologies)) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${skill}: ${amount}`;
+    skillsList.appendChild(listItem);
+  }
+    */
+
+  // Prepare data for the radar charts
+  const technicalSkillsLabels = Object.keys(technicalSkills);
+  const technicalSkillsData = Object.values(technicalSkills);
+  const technologiesLabels = Object.keys(technologies);
+  const technologiesData = Object.values(technologies);
+
+  // Create radar chart for technical skills
+  const technicalSkillsCtx = document.getElementById('technical-skills-chart').getContext('2d');
+  new Chart(technicalSkillsCtx, {
+    type: 'radar',
+    data: {
+      labels: technicalSkillsLabels,
+      datasets: [{
+        label: 'Technical Skills',
+        data: technicalSkillsData,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scale: {
+        ticks: {
+          beginAtZero: true
+        }
+      }
     }
-      */
+  });
 
-    // Prepare data for the radar charts
-    const technicalSkillsLabels = Object.keys(technicalSkills);
-    const technicalSkillsData = Object.values(technicalSkills);
-    const technologiesLabels = Object.keys(technologies);
-    const technologiesData = Object.values(technologies);
-
-    // Create radar chart for technical skills
-    const technicalSkillsCtx = document.getElementById('technical-skills-chart').getContext('2d');
-    new Chart(technicalSkillsCtx, {
-      type: 'radar',
-      data: {
-        labels: technicalSkillsLabels,
-        datasets: [{
-          label: 'Technical Skills',
-          data: technicalSkillsData,
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scale: {
-          ticks: {
-            beginAtZero: true
-          }
+  // Create radar chart for technologies
+  const technologiesCtx = document.getElementById('technologies-chart').getContext('2d');
+  new Chart(technologiesCtx, {
+    type: 'radar',
+    data: {
+      labels: technologiesLabels,
+      datasets: [{
+        label: 'Technologies',
+        data: technologiesData,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scale: {
+        ticks: {
+          beginAtZero: true
         }
       }
-    });
+    }
+  });
+})
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
 
-    // Create radar chart for technologies
-    const technologiesCtx = document.getElementById('technologies-chart').getContext('2d');
-    new Chart(technologiesCtx, {
-      type: 'radar',
-      data: {
-        labels: technologiesLabels,
-        datasets: [{
-          label: 'Technologies',
-          data: technologiesData,
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scale: {
-          ticks: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  })
-  .catch(error => console.error(error)); // Log any errors that occur during the fetch
+// Run the main function
+main();
 
 // Add event listener to the logout button
 document.getElementById('logout-button').addEventListener('click', () => {
