@@ -147,20 +147,29 @@ const main = async () => {
     const currentProject = projectData.data.progress[0]?.object.name || 'No current project';
     document.getElementById('project-name').textContent = currentProject;
 
-    // Fetch audit ratio, total audits done, and total audits received
+// Fetch audit ratio, total audits done, and total audits received
 const auditData = await fetchData(auditQuery(userId));
 const auditInfo = auditData.data.user[0];
 
 // Format audit ratio to one decimal place
 const auditRatioFormatted = auditInfo.auditRatio.toFixed(1); // Round to 1 decimal place
 
-// Function to format values
+// Function to format values to MB or kB with up to 3 significant digits
 const formatValue = (value) => {
   const bytesInMB = 1000 * 1000;
+  const bytesInKB = 1000;
+  
   if (value >= bytesInMB) {
-    return `${(value / bytesInMB).toFixed(2)} MB`; // Format as MB with two decimal places
+    // Convert to MB and round up to 3 significant digits
+    const mbValue = value / bytesInMB;
+    return `${(Math.ceil(mbValue * 1000) / 1000).toFixed(2)} MB`;
+  } else if (value >= bytesInKB) {
+    // Convert to kB and round up to 3 significant digits
+    const kbValue = value / bytesInKB;
+    return `${(Math.ceil(kbValue * 1000) / 1000).toFixed(3)} kB`;
   } else {
-    return `${value} bytes`; // Keep as bytes
+    // Keep in bytes and round to the nearest integer
+    return `${value.toFixed(0)} bytes`;
   }
 };
 
