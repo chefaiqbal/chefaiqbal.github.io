@@ -179,11 +179,12 @@ const formattedTotalUp = formatValue(auditInfo.totalUp);
 
 // Prepare audit info items
 const auditInfoItems = [
-  `Audit Ratio: ${auditRatioFormatted}`,
   `Total Audits Done: ${formattedTotalUp}`,
   `Total Audits Received: ${formattedTotalDown}`
 ];
 
+//Uncomment the following code to update the audit info section with the user's audit info on dashboard
+/*
 // Append items to the list
 const auditInfoList = document.getElementById('audit-info-list');
 auditInfoItems.forEach(item => {
@@ -191,6 +192,28 @@ auditInfoItems.forEach(item => {
   listItem.textContent = item;
   auditInfoList.appendChild(listItem);
 });
+*/
+
+// Update progress bars
+const totalAuditsDoneProgress = document.getElementById('total-audits-done-progress');
+const totalAuditsReceivedProgress = document.getElementById('total-audits-received-progress');
+const totalAuditsDoneText = document.getElementById('total-audits-done-text');
+const totalAuditsReceivedText = document.getElementById('total-audits-received-text');
+const auditRatioText = document.getElementById('audit-ratio-text');
+
+// Calculate the maximum value between totalDown and totalUp
+const maxAuditValue = Math.max(auditInfo.totalDown, auditInfo.totalUp);
+
+// Calculate the percentages based on the maximum value
+const totalDownPercentage = (auditInfo.totalDown / maxAuditValue) * 100;
+const totalUpPercentage = (auditInfo.totalUp / maxAuditValue) * 100;
+
+totalAuditsDoneProgress.style.width = `${totalUpPercentage}%`;
+totalAuditsReceivedProgress.style.width = `${totalDownPercentage}%`;
+
+totalAuditsDoneText.textContent = `${formattedTotalUp}`;
+totalAuditsReceivedText.textContent = `${formattedTotalDown}`;
+auditRatioText.textContent = `${auditRatioFormatted}`;
 
 // Fetch user's XP
 const xpData = await fetchData(xpQuery(userId));

@@ -6,6 +6,7 @@
     <title>Student Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
@@ -35,9 +36,28 @@
             <div class="card-body">
               <h3 class="card-title">Audit Information:</h3>
               <ul id="audit-info-list" class="list-unstyled"></ul>
+              <div class="mt-3">
+                <h4>Total Audits Done <i class="bi bi-arrow-up"></i></h4>
+                <div class="progress">
+                  <div id="total-audits-done-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p id="total-audits-done-text"></p>
+              </div>
+              <div class="mt-3">
+                <h4>Total Audits Received <i class="bi bi-arrow-down"></i></h4>
+                <div class="progress">
+                  <div id="total-audits-received-progress" class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p id="total-audits-received-text"></p>
+              </div>
+              <div class="mt-3">
+                <h4>Audit Ratio</h4>
+                <p id="audit-ratio-text" class="font-weight-bold"></p>
+              </div>
             </div>
           </div>
         </div>
+
         <div id="xp" class="col-md-6 mb-4">
           <div class="card">
             <div class="card-body">
