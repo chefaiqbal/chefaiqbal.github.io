@@ -148,24 +148,44 @@ const main = async () => {
     document.getElementById('project-name').textContent = currentProject;
 
     // Fetch audit ratio, total audits done, and total audits received
-    const auditData = await fetchData(auditQuery(userId));
-    const auditInfo = auditData.data.user[0];
-    const auditInfoItems = [
-      `Audit Ratio: ${auditInfo.auditRatio}`,
-      `Total Audits Done: ${auditInfo.totalUp}`,
-      `Total Audits Received: ${auditInfo.totalDown}`
-    ];
-    const auditInfoList = document.getElementById('audit-info-list');
-    auditInfoItems.forEach(item => {
-      const listItem = document.createElement('li');
-      listItem.textContent = item;
-      auditInfoList.appendChild(listItem);
-    });
+const auditData = await fetchData(auditQuery(userId));
+const auditInfo = auditData.data.user[0];
 
-    // Fetch user's XP
+// Format audit ratio to one decimal place
+const auditRatioFormatted = auditInfo.auditRatio.toFixed(1); // Round to 1 decimal place
+
+// Function to format values
+const formatValue = (value) => {
+  const bytesInMB = 1000 * 1000;
+  if (value >= bytesInMB) {
+    return `${(value / bytesInMB).toFixed(2)} MB`; // Format as MB with two decimal places
+  } else {
+    return `${value} bytes`; // Keep as bytes
+  }
+};
+
+// Format totalDown and totalUp
+const formattedTotalDown = formatValue(auditInfo.totalDown);
+const formattedTotalUp = formatValue(auditInfo.totalUp);
+
+// Prepare audit info items
+const auditInfoItems = [
+  `Audit Ratio: ${auditRatioFormatted}`,
+  `Total Audits Done: ${formattedTotalUp}`,
+  `Total Audits Received: ${formattedTotalDown}`
+];
+
+// Append items to the list
+const auditInfoList = document.getElementById('audit-info-list');
+auditInfoItems.forEach(item => {
+  const listItem = document.createElement('li');
+  listItem.textContent = item;
+  auditInfoList.appendChild(listItem);
+});
+
 // Fetch user's XP
 const xpData = await fetchData(xpQuery(userId));
-console.log('XP Query Result:', xpData);
+//console.log('XP Query Result:', xpData);
 const xp = xpData.data.transaction_aggregate.aggregate.sum.amount || 0;
 
 // Round the XP value
@@ -179,7 +199,7 @@ document.getElementById('xp-value').textContent = `${displayXp} kB`;
 // Fetch user's skills
 fetchData(skillsQuery)
 .then(data => {
-  console.log('Skills Query Result:', data);
+  //console.log('Skills Query Result:', data);
   // Extract the user's skills from the response
   const skills = data.data.user[0]?.transactions || [];
 
@@ -203,8 +223,8 @@ fetchData(skillsQuery)
       technicalSkills[skillType] += skillAmount;
     }
   });
-  console.log('Technical Skills:', technicalSkills); // Log technical skills
-  console.log('Technologies:', technologies); // Log technologies
+  //console.log('Technical Skills:', technicalSkills); // Log technical skills
+  //console.log('Technologies:', technologies); // Log technologies
 
   //Uncomment the following code to update the skills section with the user's skills on dashboard
   /*
