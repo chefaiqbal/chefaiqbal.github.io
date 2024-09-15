@@ -154,19 +154,19 @@ const auditInfo = auditData.data.user[0];
 // Format audit ratio to one decimal place
 const auditRatioFormatted = auditInfo.auditRatio.toFixed(1); // Round to 1 decimal place
 
-// Function to format values to MB or kB with up to 3 significant digits
+// Function to format values to MB or kB with up to specifiied significant digits
 const formatValue = (value) => {
   const bytesInMB = 1000 * 1000;
   const bytesInKB = 1000;
   
   if (value >= bytesInMB) {
-    // Convert to MB and round up to 3 significant digits
+    // Convert to MB and round up to 2 significant digits
     const mbValue = value / bytesInMB;
     return `${(Math.ceil(mbValue * 1000) / 1000).toFixed(2)} MB`;
   } else if (value >= bytesInKB) {
-    // Convert to kB and round up to 3 significant digits
+    // Convert to kB and round up to 0 significant digits
     const kbValue = value / bytesInKB;
-    return `${(Math.ceil(kbValue * 1000) / 1000).toFixed(3)} kB`;
+    return `${(Math.ceil(kbValue * 1000) / 1000).toFixed(0)} kB`;
   } else {
     // Keep in bytes and round to the nearest integer
     return `${value.toFixed(0)} bytes`;
