@@ -86,6 +86,30 @@ const skillsQuery = `
   }
 `;
 
+// Define the GraphQL query to fetch the last 4 projects
+
+const lastProjectsQuery = `
+{
+    transaction(
+      where: {
+        type: { _eq: "xp" }
+        _and: [
+          { path: { _like: "/bahrain/bh-module%" } },
+          { path: { _nlike: "/bahrain/bh-module/checkpoint%" } },
+          { path: { _nlike: "/bahrain/bh-module/piscine-js%" } }
+        ]
+      }
+      order_by: { createdAt: desc }
+      limit: 4
+    ) {
+      object {
+        type
+        name
+      }
+    }
+  }
+  `;
+
 // Function to fetch data from the GraphQL endpoint
 const fetchData = (query) => {
   return fetch(url, {
@@ -146,6 +170,17 @@ const main = async () => {
     const projectData = await fetchData(currentProjectQuery);
     const currentProject = projectData.data.progress[0]?.object.name || 'No current project';
     document.getElementById('project-name').textContent = currentProject;
+
+    // Fetch the last 4 projects
+    const lastProjectsData = await fetchData(lastProjectsQuery);
+    const lastProjects = lastProjectsData.data.transaction.map(project => project.object.type + ' — ' + project.object.name);
+    const lastActivityList = document.getElementById('last-activity-list');
+    lastActivityList.innerHTML = ''; // Clear any existing items
+    lastProjects.forEach(project => {
+      const listItem = document.createElement('li');
+      listItem.textContent = project;
+      lastActivityList.appendChild(listItem);
+    });
 
 // Fetch audit ratio, total audits done, and total audits received
 const auditData = await fetchData(auditQuery(userId));
