@@ -143,3 +143,17 @@ input:focus {
         font-size: 14px;
     }
 }
+
+/* Ensure SVG elements are responsive */
+.progress {
+    width: 100%; /* Container width should be 100% of its parent */
+    background-color: #f8f9fa; /* Optional: background color for better visibility */
+    border: 1px solid #ced4da; /* Optional: border for visibility */
+    padding: 0; /* Remove any padding */
+    margin: 0; /* Remove any margin */
+}
+
+.progress svg {
+    width: 100%; /* Make SVG responsive to container width */
+    height: 100%; /* Ensure SVG fills the height of the container */
+}

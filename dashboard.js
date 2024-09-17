@@ -182,70 +182,86 @@ const main = async () => {
       lastActivityList.appendChild(listItem);
     });
 
+// Function to create or update a progress bar using D3.js
+function createProgressBar(selector, percentage, color) {
+  const svg = d3.select(selector);
+  const width = parseFloat(svg.style('width')) || 400 // Fixed width for simplicity
+  const height = 20; // Fixed height
+
+  svg.attr('width', width)
+     .attr('height', height);
+
+  svg.selectAll('*').remove(); // Clear any existing content
+
+  svg.append('rect')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('fill', '#e0e0e0'); // Background bar
+
+  svg.append('rect')
+    .attr('width', (percentage / 100) * width) // Calculate width based on percentage
+    .attr('height', height)
+    .attr('fill', color); // Progress bar
+}
+
 // Fetch audit ratio, total audits done, and total audits received
-const auditData = await fetchData(auditQuery(userId));
-const auditInfo = auditData.data.user[0];
+async function updateProgressBars() {
+  const auditData = await fetchData(auditQuery(userId));
+  const auditInfo = auditData.data.user[0];
 
-// Format audit ratio to one decimal place
-const auditRatioFormatted = auditInfo.auditRatio.toFixed(1); // Round to 1 decimal place
+  // Format audit ratio to one decimal place
+  const auditRatioFormatted = auditInfo.auditRatio.toFixed(1);
 
-// Function to format values to MB or kB with up to specifiied significant digits
-const formatValue = (value) => {
-  const bytesInMB = 1000 * 1000;
-  const bytesInKB = 1000;
-  
-  if (value >= bytesInMB) {
-    // Convert to MB and round up to 2 significant digits
-    const mbValue = value / bytesInMB;
-    return `${(Math.ceil(mbValue * 1000) / 1000).toFixed(2)} MB`;
-  } else if (value >= bytesInKB) {
-    // Convert to kB and round up to 0 significant digits
-    const kbValue = value / bytesInKB;
-    return `${(Math.ceil(kbValue * 1000) / 1000).toFixed(0)} kB`;
-  } else {
-    // Keep in bytes and round to the nearest integer
-    return `${value.toFixed(0)} bytes`;
-  }
-};
+  // Function to format values to MB or kB with up to specified significant digits
+  const formatValue = (value) => {
+    const bytesInMB = 1000 * 1000;
+    const bytesInKB = 1000;
+    
+    if (value >= bytesInMB) {
+      const mbValue = value / bytesInMB;
+      return `${(Math.ceil(mbValue * 1000) / 1000).toFixed(2)} MB`;
+    } else if (value >= bytesInKB) {
+      const kbValue = value / bytesInKB;
+      return `${(Math.ceil(kbValue * 1000) / 1000).toFixed(0)} kB`;
+    } else {
+      return `${value.toFixed(0)} bytes`;
+    }
+  };
 
-// Format totalDown and totalUp
-const formattedTotalDown = formatValue(auditInfo.totalDown);
-const formattedTotalUp = formatValue(auditInfo.totalUp);
+  // Format totalDown and totalUp
+  const formattedTotalDown = formatValue(auditInfo.totalDown);
+  const formattedTotalUp = formatValue(auditInfo.totalUp);
 
-// Prepare audit info items
-const auditInfoItems = [
-  `Total Audits Done: ${formattedTotalUp}`,
-  `Total Audits Received: ${formattedTotalDown}`
-];
+  // Calculate the maximum value between totalDown and totalUp
+  const maxAuditValue = Math.max(auditInfo.totalDown, auditInfo.totalUp);
+  console.log('Max Audit Value:', maxAuditValue);
 
-// Append items to the list
-const auditInfoList = document.getElementById('audit-info-list');
-auditInfoItems.forEach(item => {
-  const listItem = document.createElement('li');
-  listItem.textContent = item;
-  auditInfoList.appendChild(listItem);
-});
+  // Calculate the percentages based on the maximum value
+  const totalDownPercentage = (auditInfo.totalDown / maxAuditValue) * 100;
+  const totalUpPercentage = (auditInfo.totalUp / maxAuditValue) * 100;
+  console.log('Total Down Percentage:', totalDownPercentage);
+  console.log('Total Up Percentage:', totalUpPercentage);
 
-// Update progress bars
-const totalAuditsDoneProgress = document.getElementById('total-audits-done-progress');
-const totalAuditsReceivedProgress = document.getElementById('total-audits-received-progress');
-const totalAuditsDoneText = document.getElementById('total-audits-done-text');
-const totalAuditsReceivedText = document.getElementById('total-audits-received-text');
-const auditRatioText = document.getElementById('audit-ratio-text');
+  // Determine colors based on comparison
+  const doneColor = auditInfo.totalUp >= auditInfo.totalDown ? '#28a745' : '#dc3545';
+  const receivedColor = auditInfo.totalDown >= auditInfo.totalUp ? '#17a2b8' : '#ffc107';
 
-// Calculate the maximum value between totalDown and totalUp
-const maxAuditValue = Math.max(auditInfo.totalDown, auditInfo.totalUp);
+  // Create or update progress bars
+  createProgressBar('#total-audits-done-progress', totalUpPercentage, doneColor);
+  createProgressBar('#total-audits-received-progress', totalDownPercentage, receivedColor);
 
-// Calculate the percentages based on the maximum value
-const totalDownPercentage = (auditInfo.totalDown / maxAuditValue) * 100;
-const totalUpPercentage = (auditInfo.totalUp / maxAuditValue) * 100;
+  // Update text content
+  document.getElementById('total-audits-done-text').textContent = `${formattedTotalUp}`;
+  document.getElementById('total-audits-received-text').textContent = `${formattedTotalDown}`;
+  document.getElementById('audit-ratio-text').textContent = `${auditRatioFormatted}`;
+}
 
-totalAuditsDoneProgress.style.width = `${totalUpPercentage}%`;
-totalAuditsReceivedProgress.style.width = `${totalDownPercentage}%`;
+// Call the function to update progress bars
+updateProgressBars();
 
-totalAuditsDoneText.textContent = `${formattedTotalUp}`;
-totalAuditsReceivedText.textContent = `${formattedTotalDown}`;
-auditRatioText.textContent = `${auditRatioFormatted}`;
+
+
+ 
 
 // Fetch user's XP
 const xpData = await fetchData(xpQuery(userId));
@@ -264,6 +280,69 @@ document.getElementById('xp-value').textContent = `${displayXp} kB`;
 const formatSkillName = (skill) => {
   return skill.replace('skill_', '').replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 };
+
+// Function to create a radar chart using D3.js
+function createRadarChart(data, labels, selector) {
+  const svg = d3.select(selector);
+  const width = +svg.attr('width');
+  const height = +svg.attr('height');
+  const radius = Math.min(width, height) / 2;
+  const levels = 5; // Number of concentric circles
+  const angleSlice = (Math.PI * 2) / labels.length;
+
+  const rScale = d3.scaleLinear()
+    .range([0, radius])
+    .domain([0, d3.max(data)]);
+
+  const radarLine = d3.lineRadial()
+    .radius(d => rScale(d))
+    .angle((d, i) => i * angleSlice);
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${width / 2},${height / 2})`);
+
+  // Draw the background circles
+  for (let i = 0; i < levels; i++) {
+    g.append('circle')
+      .attr('r', radius / levels * (i + 1))
+      .attr('fill', '#CDCDCD')
+      .attr('stroke', '#CDCDCD')
+      .attr('fill-opacity', 0.1);
+  }
+
+  // Draw the axes
+  const axisGrid = g.append('g').attr('class', 'axisWrapper');
+  axisGrid.selectAll('.axis')
+    .data(labels)
+    .enter()
+    .append('line')
+    .attr('x1', 0)
+    .attr('y1', 0)
+    .attr('x2', (d, i) => rScale(d3.max(data)) * Math.cos(angleSlice * i - Math.PI / 2))
+    .attr('y2', (d, i) => rScale(d3.max(data)) * Math.sin(angleSlice * i - Math.PI / 2))
+    .attr('stroke', 'white')
+    .attr('stroke-width', '2px');
+
+  // Draw the labels
+  axisGrid.selectAll('.axisLabel')
+    .data(labels)
+    .enter()
+    .append('text')
+    .attr('x', (d, i) => rScale(d3.max(data) * 1.1) * Math.cos(angleSlice * i - Math.PI / 2))
+    .attr('y', (d, i) => rScale(d3.max(data) * 1.1) * Math.sin(angleSlice * i - Math.PI / 2))
+    .attr('dy', '0.35em')
+    .attr('font-size', '10px')
+    .attr('text-anchor', 'middle')
+    .text(d => d);
+
+  // Draw the radar chart blobs
+  g.append('path')
+    .datum(data)
+    .attr('d', radarLine)
+    .attr('fill', 'rgba(54, 162, 235, 0.2)')
+    .attr('stroke', 'rgba(54, 162, 235, 1)')
+    .attr('stroke-width', 2);
+}
 
 // Fetch user's skills
 fetchData(skillsQuery)
@@ -295,6 +374,14 @@ fetchData(skillsQuery)
   console.log('Technical Skills:', technicalSkills); // Log technical skills
   console.log('Technologies:', technologies); // Log technologies
 
+  const technicalSkillsLabels = Object.keys(technicalSkills).map(formatSkillName);
+  const technicalSkillsData = Object.values(technicalSkills);
+  const technologiesLabels = Object.keys(technologies).map(formatSkillName);
+  const technologiesData = Object.values(technologies);
+
+  createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
+  createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
+});
   //Uncomment the following code to update the skills section with the user's skills on dashboard
   /*
   // Update the skills section with the user's skills
@@ -324,65 +411,6 @@ fetchData(skillsQuery)
   }
   */
 
-  // Prepare data for the radar charts
-  const technicalSkillsLabels = Object.keys(technicalSkills).map(formatSkillName);
-  const technicalSkillsData = Object.values(technicalSkills);
-  const technologiesLabels = Object.keys(technologies).map(formatSkillName);
-  const technologiesData = Object.values(technologies);
-
-  // Create radar chart for technical skills
-  const technicalSkillsCtx = document.getElementById('technical-skills-chart').getContext('2d');
-  new Chart(technicalSkillsCtx, {
-    type: 'radar',
-    data: {
-      labels: technicalSkillsLabels,
-      datasets: [{
-        label: 'Technical Skills',
-        data: technicalSkillsData,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-        pointRadius: 3
-      }]
-    },
-    options: {
-      scale: {
-        ticks: {
-          beginAtZero: true,
-          display: false // Hide the numbers
-        }
-      }
-    }
-  });
-
-  // Create radar chart for technologies
-  const technologiesCtx = document.getElementById('technologies-chart').getContext('2d');
-  new Chart(technologiesCtx, {
-    type: 'radar',
-    data: {
-      labels: technologiesLabels,
-      datasets: [{
-        label: 'Technologies',
-        data: technologiesData,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-        pointRadius: 3
-      }]
-    },
-    options: {
-      scale: {
-        ticks: {
-          beginAtZero: true,
-          display: false // Hide the numbers
-        }
-      }
-    }
-  });
-
-})
   }
   catch (error) {
     console.error(error);
