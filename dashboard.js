@@ -286,7 +286,7 @@ function createRadarChart(data, labels, selector) {
   const svg = d3.select(selector);
   const width = +svg.attr('width');
   const height = +svg.attr('height');
-  const radius = Math.min(width, height) / 2;
+  const radius = Math.min(width, height) / 2 - 40; 
   const levels = 5; // Number of concentric circles
   const angleSlice = (Math.PI * 2) / labels.length;
 
@@ -332,7 +332,14 @@ function createRadarChart(data, labels, selector) {
     .attr('y', (d, i) => rScale(d3.max(data) * 1.1) * Math.sin(angleSlice * i - Math.PI / 2))
     .attr('dy', '0.35em')
     .attr('font-size', '10px')
-    .attr('text-anchor', 'middle')
+    .attr('text-anchor', (d, i) => {
+      const angle = angleSlice * i;
+      return angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? 'end' : 'start';
+    })
+    .attr('transform', (d, i) => {
+      const angle = angleSlice * i;
+      return angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? `rotate(0 ${rScale(d3.max(data) * 1.1) * Math.cos(angle - Math.PI / 2)},${rScale(d3.max(data) * 1.1) * Math.sin(angle - Math.PI / 2)})` : null;
+    })
     .text(d => d);
 
   // Draw the radar chart blobs
@@ -344,44 +351,40 @@ function createRadarChart(data, labels, selector) {
     .attr('stroke-width', 0);
 }
 
-// Fetch user's skills
+
+// Fetch user's skills and create radar charts
 fetchData(skillsQuery)
-.then(data => {
-  //console.log('Skills Query Result:', data);
-  // Extract the user's skills from the response
-  const skills = data.data.user[0]?.transactions || [];
+  .then(data => {
+    const skills = data.data.user[0]?.transactions || [];
 
-  // Separate skills into Technical Skills and Technologies
-  const technicalSkills = {};
-  const technologies = {};
+    const technicalSkills = {};
+    const technologies = {};
 
-  skills.forEach(skill => {
-    const skillType = skill.type;
-    const skillAmount = skill.amount;
+    skills.forEach(skill => {
+      const skillType = skill.type;
+      const skillAmount = skill.amount;
 
-    if (['skill_go', 'skill_js', 'skill_html', 'skill_css', 'skill_unix', 'skill_docker'].includes(skillType)) {
-      if (!technologies[skillType]) {
-        technologies[skillType] = 0;
+      if (['skill_go', 'skill_js', 'skill_html', 'skill_css', 'skill_unix', 'skill_docker'].includes(skillType)) {
+        if (!technologies[skillType]) {
+          technologies[skillType] = 0;
+        }
+        technologies[skillType] += skillAmount;
+      } else if (['skill_prog', 'skill_algo', 'skill_front-end', 'skill_back-end'].includes(skillType)) {
+        if (!technicalSkills[skillType]) {
+          technicalSkills[skillType] = 0;
+        }
+        technicalSkills[skillType] += skillAmount;
       }
-      technologies[skillType] += skillAmount;
-    } else if (['skill_prog', 'skill_algo', 'skill_front-end', 'skill_back-end'].includes(skillType)) {
-      if (!technicalSkills[skillType]) {
-        technicalSkills[skillType] = 0;
-      }
-      technicalSkills[skillType] += skillAmount;
-    }
+    });
+
+    const technicalSkillsLabels = Object.keys(technicalSkills).map(formatSkillName);
+    const technicalSkillsData = Object.values(technicalSkills);
+    const technologiesLabels = Object.keys(technologies).map(formatSkillName);
+    const technologiesData = Object.values(technologies);
+
+    createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
+    createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
   });
-  console.log('Technical Skills:', technicalSkills); // Log technical skills
-  console.log('Technologies:', technologies); // Log technologies
-
-  const technicalSkillsLabels = Object.keys(technicalSkills).map(formatSkillName);
-  const technicalSkillsData = Object.values(technicalSkills);
-  const technologiesLabels = Object.keys(technologies).map(formatSkillName);
-  const technologiesData = Object.values(technologies);
-
-  createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
-  createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
-});
   //Uncomment the following code to update the skills section with the user's skills on dashboard
   /*
   // Update the skills section with the user's skills
