@@ -234,13 +234,13 @@ async function updateProgressBars() {
 
   // Calculate the maximum value between totalDown and totalUp
   const maxAuditValue = Math.max(auditInfo.totalDown, auditInfo.totalUp);
-  console.log('Max Audit Value:', maxAuditValue);
+  //console.log('Max Audit Value:', maxAuditValue);
 
   // Calculate the percentages based on the maximum value
   const totalDownPercentage = (auditInfo.totalDown / maxAuditValue) * 100;
   const totalUpPercentage = (auditInfo.totalUp / maxAuditValue) * 100;
-  console.log('Total Down Percentage:', totalDownPercentage);
-  console.log('Total Up Percentage:', totalUpPercentage);
+  //console.log('Total Down Percentage:', totalDownPercentage);
+  //console.log('Total Up Percentage:', totalUpPercentage);
 
   // Determine colors based on comparison
   const doneColor = auditInfo.totalUp >= auditInfo.totalDown ? '#28a745' : '#dc3545';
@@ -341,7 +341,7 @@ function createRadarChart(data, labels, selector) {
     .attr('d', radarLine)
     .attr('fill', 'rgba(54, 162, 235, 0.2)')
     .attr('stroke', 'rgba(54, 162, 235, 1)')
-    .attr('stroke-width', 2);
+    .attr('stroke-width', 0);
 }
 
 // Fetch user's skills

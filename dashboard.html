@@ -12,12 +12,11 @@
   <body>
     <div class="container mt-5">
       <h2 id="welcome-message" class="text-center my-4">Welcome</h2>
-      
       <div class="row">
         <div id="user-info" class="col-md-4 mb-4">
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Your Information:</h3>
+              <h3 class="card-title">Information <i class="bi bi-file-binary"></i></h3> 
               <ul id="user-info-list" class="list-unstyled"></ul>
             </div>
           </div>
@@ -25,23 +24,23 @@
         <div id="xp" class="col-md-4 mb-4">
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Your XP:</h3>
-              <p id="xp-value"></p>
+              <h3 class="card-title">Your XP <i class="bi bi-code-slash"></i></h3>
+              <p id="xp-value" ></p>
             </div>
           </div>
         </div>
         <div id="current-project" class="col-md-4 mb-4">
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Current Project:</h3>
+              <h3 class="card-title">Current Project <i class="bi bi-controller"></i></h3>
               <p id="project-name"></p>
             </div>
           </div>
         </div>
-        <div id="last-activity" class="col-md-12 mb-4">
+        <div id="last-activity" class="col-md-12 mb-4"> 
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Last Activity:</h3>
+              <h3 class="card-title">Last Activity <i class="bi bi-card-checklist"></i></h3>
               <ul id="last-activity-list" class="list-unstyled"></ul>
             </div>
           </div>
@@ -49,7 +48,7 @@
         <div id="audit-info" class="col-md-12 mb-4">
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Audit Information:</h3>
+              <h3 class="card-title">Audit Information <i class="bi bi-cpu"></i></h3>
               <ul id="audit-info-list" class="list-unstyled"></ul>
               <div class="mt-3">
                 <h4>Total Audits Done <i class="bi bi-arrow-up"></i></h4>
@@ -76,21 +75,21 @@
       <div id="skills" class="col-md-12 mb-4">
         <div class="card">
           <div class="card-body">
-            <h3 class="card-title">Your Skills:</h3>
+            <h3 class="card-title d-flex justify-content-center align-items-center">Skills <i class="bi bi-stars"></i></h3>
             <ul id="skills-list" class="list-unstyled"></ul>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-6 d-flex justify-content-center">
                 <svg id="technical-skills-chart" width="400" height="500"></svg>
               </div>
-              <div class="col-md-6">
-                <svg id="technologies-chart" width="500" height="500"></svg>
+              <div class="col-md-6 d-flex justify-content-center">
+                <svg id="technologies-chart" width="400" height="500"></svg>
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      <button id="logout-button" class="btn btn-danger btn-block">Logout</button>
+      <button id="logout-button" class="btn btn-danger btn-block">Logout <i class="bi bi-power"></i></button>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/js/popper.min.js"></script>
