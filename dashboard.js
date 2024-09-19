@@ -284,12 +284,15 @@ const formatSkillName = (skill) => {
 // Function to create a radar chart using D3.js
 function createRadarChart(data, labels, selector) {
   const svg = d3.select(selector);
-  const width = +svg.attr('width');
-  const height = +svg.attr('height');
-  const radius = Math.min(width, height) / 2 - 40; 
+  const container = svg.node().parentNode;
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  const padding = 60; // Add padding to ensure labels are not cut off
+  const radius = Math.min(width, height) / 2.5 - padding;
   const levels = 5; // Number of concentric circles
   const angleSlice = (Math.PI * 2) / labels.length;
 
+  svg.attr('width', width).attr('height', height);
   const rScale = d3.scaleLinear()
     .range([0, radius])
     .domain([0, d3.max(data)]);
@@ -334,7 +337,7 @@ function createRadarChart(data, labels, selector) {
     .attr('font-size', '10px')
     .attr('text-anchor', (d, i) => {
       const angle = angleSlice * i;
-      return angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? 'end' : 'start';
+      return angle > Math.PI / 2 && angle < (5 * Math.PI) / 2 ? 'middle' : 'middle';
     })
     .attr('transform', (d, i) => {
       const angle = angleSlice * i;
@@ -381,6 +384,9 @@ fetchData(skillsQuery)
     const technicalSkillsData = Object.values(technicalSkills);
     const technologiesLabels = Object.keys(technologies).map(formatSkillName);
     const technologiesData = Object.values(technologies);
+
+    console.log('Technical Skills:', technicalSkills);
+    console.log('Technologies:', technologies);
 
     createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
     createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
