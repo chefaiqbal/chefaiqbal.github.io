@@ -185,7 +185,8 @@ const main = async () => {
 // Function to create or update a progress bar using D3.js
 function createProgressBar(selector, percentage, color) {
   const svg = d3.select(selector);
-  const width = parseFloat(svg.style('width')) || 400 // Fixed width for simplicity
+  const container = svg.node().parentNode;
+  const width = container.clientWidth; // Get the width of the container
   const height = 20; // Fixed height
 
   svg.attr('width', width)
@@ -256,10 +257,11 @@ async function updateProgressBars() {
   document.getElementById('audit-ratio-text').textContent = `${auditRatioFormatted}`;
 }
 
+
 // Call the function to update progress bars
 updateProgressBars();
 
-
+window.addEventListener('resize', updateProgressBars);
 
  
 
@@ -293,8 +295,10 @@ function createRadarChart(data, labels, selector) {
   const angleSlice = (Math.PI * 2) / labels.length;
 
   svg.attr('width', width).attr('height', height);
+  svg.selectAll('*').remove(); // Clear any existing content
+
   const rScale = d3.scaleLinear()
-    .range([0, radius])
+    .range([20, radius])
     .domain([0, d3.max(data)]);
 
   const radarLine = d3.lineRadial()
@@ -335,10 +339,7 @@ function createRadarChart(data, labels, selector) {
     .attr('y', (d, i) => rScale(d3.max(data) * 1.1) * Math.sin(angleSlice * i - Math.PI / 2))
     .attr('dy', '0.35em')
     .attr('font-size', '10px')
-    .attr('text-anchor', (d, i) => {
-      const angle = angleSlice * i;
-      return angle > Math.PI / 2 && angle < (5 * Math.PI) / 2 ? 'middle' : 'middle';
-    })
+    .attr('text-anchor', 'middle')
     .attr('transform', (d, i) => {
       const angle = angleSlice * i;
       return angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? `rotate(0 ${rScale(d3.max(data) * 1.1) * Math.cos(angle - Math.PI / 2)},${rScale(d3.max(data) * 1.1) * Math.sin(angle - Math.PI / 2)})` : null;
@@ -349,11 +350,33 @@ function createRadarChart(data, labels, selector) {
   g.append('path')
     .datum(data)
     .attr('d', radarLine)
-    .attr('fill', 'rgba(54, 162, 235, 0.2)')
+    .attr('fill', 'rgba(38, 46, 44, 0.2)')
     .attr('stroke', 'rgba(54, 162, 235, 1)')
     .attr('stroke-width', 0);
 }
 
+// Function to create or update a progress bar using D3.js
+function createProgressBar(selector, percentage, color) {
+  const svg = d3.select(selector);
+  const container = svg.node().parentNode;
+  const width = container.clientWidth; // Get the width of the container
+  const height = 20; // Fixed height
+
+  svg.attr('width', width)
+     .attr('height', height);
+
+  svg.selectAll('*').remove(); // Clear any existing content
+
+  svg.append('rect')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('fill', '#e0e0e0'); // Background bar
+
+  svg.append('rect')
+    .attr('width', (percentage / 100) * width) // Calculate width based on percentage
+    .attr('height', height)
+    .attr('fill', color); // Progress bar
+}
 
 // Fetch user's skills and create radar charts
 fetchData(skillsQuery)
@@ -388,9 +411,28 @@ fetchData(skillsQuery)
     console.log('Technical Skills:', technicalSkills);
     console.log('Technologies:', technologies);
 
+    // Store the data globally for use in resize event
+    window.technicalSkillsData = technicalSkillsData;
+    window.technicalSkillsLabels = technicalSkillsLabels;
+    window.technologiesData = technologiesData;
+    window.technologiesLabels = technologiesLabels;
+
     createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
     createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
   });
+
+document.addEventListener('DOMContentLoaded', () => {
+  createProgressBar('#progress-bar-selector', 75, '#4caf50'); // Update with your selector and values
+  createRadarChart(window.technicalSkillsData, window.technicalSkillsLabels, '#technical-skills-chart'); // Update with your data, labels, and selector
+  createRadarChart(window.technologiesData, window.technologiesLabels, '#technologies-chart'); // Update with your data, labels, and selector
+});
+
+// Add event listener for window resize to update charts
+window.addEventListener('resize', () => {
+  createProgressBar('#progress-bar-selector', 75, '#4caf50'); // Update with your selector and values
+  createRadarChart(window.technicalSkillsData, window.technicalSkillsLabels, '#technical-skills-chart'); // Update with your data, labels, and selector
+  createRadarChart(window.technologiesData, window.technologiesLabels, '#technologies-chart'); // Update with your data, labels, and selector
+});
   //Uncomment the following code to update the skills section with the user's skills on dashboard
   /*
   // Update the skills section with the user's skills

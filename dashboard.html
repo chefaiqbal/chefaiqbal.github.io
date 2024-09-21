@@ -11,7 +11,17 @@
   </head>
   <body>
     <div class="container mt-5">
-      <h2 id="welcome-message" class="text-center my-4">Welcome</h2>
+      <div class="row justify-content-between align-items-center mb-4">
+        <div class="col-md-8 d-flex align-items-center">
+      <h2 id="welcome-message" class="text-left my-4">Welcome</h2>
+    </div>
+
+    <div class="col-md-4 text-right">
+      <a href="#" id="logout-button" class="text-danger">
+        <i class="bi bi-power" style="font-size: 1.5rem;"></i>
+      </a>
+    </div>
+  </div>
       <div class="row">
         <div id="user-info" class="col-md-4 mb-4">
           <div class="card">
@@ -89,8 +99,17 @@
         </div>
       </div>
       
-      <button id="logout-button" class="btn btn-danger btn-block">Logout <i class="bi bi-power"></i></button>
+ 
     </div>
+
+    <!-- Footer -->
+<footer class="text-center mt-5">
+  <p>Want to build your own dashboard? Contact me at 
+    <a href="mailto:amiriqbal87@gmail.com" class="text-decoration-none">
+      <i class="bi bi-envelope-fill"></i>
+    </a>
+  </p>
+</footer>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/js/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
