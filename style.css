@@ -6,9 +6,13 @@
 }
 
 body {
+        background-image: url('01.svg'); /* Set the background image */
+    background-size: cover; /* Ensure the image covers the entire page */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
     background-color: #f4f4f9;
-    color: z#000855;
-    font-family: 'Arial', sans-serif;
+    color: #000000;
+    font-family: 'IBM Plex Sans', sans-serif;
     height: 100vh;
     margin: 0;
 }
@@ -162,3 +166,7 @@ svg {
     width: 100%; /* Make SVG responsive to container width */
     height: 100%; /* Ensure SVG fills the height of the container */
   }
+
+  .card {
+    background-color: rgba(233, 236, 239, 0.7); /* Set background to #e9ecef with 50% transparency */
+}
