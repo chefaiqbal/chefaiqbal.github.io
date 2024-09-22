@@ -38,6 +38,14 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Set the initial theme based on user preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.setAttribute('data-bs-theme', 'dark');
+      } else {
+        document.body.setAttribute('data-bs-theme', 'light');
+      }
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

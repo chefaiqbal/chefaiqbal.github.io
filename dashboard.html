@@ -51,7 +51,7 @@
         <div id="last-activity" class="col-md-12 mb-4"> 
           <div class="card">
             <div class="card-body">
-              <h3 class="card-title">Last Activity <i class="bi bi-card-checklist"></i></h3>
+              <h3 class="card-title">Last Activity (Projects) <i class="bi bi-card-checklist"></i></h3>
               <ul id="last-activity-list" class="list-unstyled"></ul>
             </div>
           </div>
@@ -113,6 +113,14 @@
 </footer>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Set the initial theme based on user preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.setAttribute('data-bs-theme', 'dark');
+      } else {
+        document.body.setAttribute('data-bs-theme', 'light');
+      }
+    </script>
     <script src="dashboard.js"></script>
   </body>
 </html>

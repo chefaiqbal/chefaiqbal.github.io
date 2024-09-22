@@ -196,7 +196,7 @@ function createProgressBar(selector, percentage, color) {
   svg.append('rect')
     .attr('width', width)
     .attr('height', height)
-    .attr('fill', '#e0e0e0'); // Background bar
+    .attr('fill', '#e0e0e0red'); // Background bar
 
   svg.append('rect')
     .attr('width', (percentage / 100) * width) // Calculate width based on percentage
@@ -266,17 +266,24 @@ window.addEventListener('resize', updateProgressBars);
 
 // Fetch user's XP
 const xpData = await fetchData(xpQuery(userId));
-//console.log('XP Query Result:', xpData);
 console.log('XP Data:', xpData.data.transaction_aggregate.aggregate.sum.amount);
 const xp = xpData.data.transaction_aggregate.aggregate.sum.amount || 0;
 
-// Round the XP value
-const roundedXp = Math.ceil(xp / 1000);
+// Check if XP is 999.9 kB or above and convert to MB if necessary
+let displayXpText;
+if (xp >= 999900) {
+  const xpInMB = (xp / 1000000).toFixed(2); // Convert to MB and format to two decimal places
+  displayXpText = `${xpInMB} MB`;
+} else {
+  // Round the XP value
+  const roundedXp = Math.ceil(xp / 1000);
 
-// Ensure values like 269,350 are not rounded up incorrectly
-const displayXp = xp % 1000 >= 500 ? roundedXp : Math.floor(xp / 1000);
+  // Ensure values like 269,350 are not rounded up incorrectly
+  const displayXp = xp % 1000 >= 500 ? roundedXp : Math.floor(xp / 1000);
+  displayXpText = `${displayXp} kB`;
+}
 
-document.getElementById('xp-value').textContent = `${displayXp} kB`;
+document.getElementById('xp-value').textContent = displayXpText;
 
 // Helper function to format skill names
 const formatSkillName = (skill) => {
@@ -333,6 +340,12 @@ function createRadarChart(data, labels, selector) {
     .attr('stroke', 'white')
     .attr('stroke-width', '2px');
 
+  // Determine the fill and stroke colors based on the current theme
+  const currentTheme = document.body.getAttribute('data-bs-theme');
+  const fillColor = currentTheme === 'dark' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(38, 46, 44, 0.2)';
+  const strokeColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 1)' : 'rgba(54, 162, 235, 1)';
+  const labelColor = currentTheme === 'dark' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+
   // Draw the labels
   axisGrid.selectAll('.axisLabel')
     .data(labels)
@@ -347,14 +360,15 @@ function createRadarChart(data, labels, selector) {
       const angle = angleSlice * i;
       return angle > Math.PI / 2 && angle < (3 * Math.PI) / 2 ? `rotate(0 ${rScale(d3.max(data) * 1.1) * Math.cos(angle - Math.PI / 2)},${rScale(d3.max(data) * 1.1) * Math.sin(angle - Math.PI / 2)})` : null;
     })
+    .attr('fill', labelColor) // Set the label color
     .text(d => d);
 
   // Draw the radar chart blobs
   g.append('path')
     .datum(data)
     .attr('d', radarLine)
-    .attr('fill', 'rgba(38, 46, 44, 0.2)')
-    .attr('stroke', 'rgba(54, 162, 235, 1)')
+    .attr('fill', fillColor)
+    .attr('stroke', strokeColor)
     .attr('stroke-width', 0);
 }
 
