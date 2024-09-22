@@ -22,7 +22,6 @@ const userQuery = (userId) => `
       email
       firstName
       lastName
-      attrs(path: "Phone")
     }
   }
 `;
@@ -148,7 +147,7 @@ const main = async () => {
       `Email: ${userInfo.email}`,
       `First Name: ${userInfo.firstName}`,
       `Last Name: ${userInfo.lastName}`,
-      `Phone: ${userInfo.attrs}`
+      //`Phone: ${userInfo.attrs}`
     ];
 
     // Update the user info section with the user information items
