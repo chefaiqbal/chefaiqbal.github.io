@@ -291,7 +291,7 @@ const formatSkillName = (skill) => {
 };
 
 // Function to create a radar chart using D3.js
-function createRadarChart(data, labels, selector) {
+function createRadarChart(data, labels, selector, chartTitle) {
   const svg = d3.select(selector);
   const container = svg.node().parentNode;
   const width = container.clientWidth;
@@ -317,6 +317,16 @@ function createRadarChart(data, labels, selector) {
 
   const g = svg.append('g')
     .attr('transform', `translate(${width / 2},${height / 2})`);
+
+      // Add chart title
+      g.append('text')
+      .attr('x', 0)
+      .attr('y', -radius - 60) // Position above the chart
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '16px')
+      .attr('font-weight', 'bold')
+      .attr('fill', 'currentColor') // Use currentColor for adaptive color
+      .text(chartTitle);
 
   // Draw the background circles
   for (let i = 0; i < levels; i++) {
@@ -434,8 +444,8 @@ fetchData(skillsQuery)
     window.technologiesData = technologiesData;
     window.technologiesLabels = technologiesLabels;
 
-    createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart');
-    createRadarChart(technologiesData, technologiesLabels, '#technologies-chart');
+    createRadarChart(technicalSkillsData, technicalSkillsLabels, '#technical-skills-chart', 'Technical Skills');
+    createRadarChart(technologiesData, technologiesLabels, '#technologies-chart', 'Technologies');
   });
 
 document.addEventListener('DOMContentLoaded', () => {
