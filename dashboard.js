@@ -268,6 +268,7 @@ window.addEventListener('resize', updateProgressBars);
 // Fetch user's XP
 const xpData = await fetchData(xpQuery(userId));
 //console.log('XP Query Result:', xpData);
+console.log('XP Data:', xpData.data.transaction_aggregate.aggregate.sum.amount);
 const xp = xpData.data.transaction_aggregate.aggregate.sum.amount || 0;
 
 // Round the XP value
@@ -294,7 +295,10 @@ function createRadarChart(data, labels, selector) {
   const levels = 5; // Number of concentric circles
   const angleSlice = (Math.PI * 2) / labels.length;
 
-  svg.attr('width', width).attr('height', height);
+  svg.attr('width', '100%')
+     .attr('height', '100%')
+     .attr('viewBox', `0 0 ${width} ${height}`)
+     .attr('preserveAspectRatio', 'xMidYMid meet');
   svg.selectAll('*').remove(); // Clear any existing content
 
   const rScale = d3.scaleLinear()

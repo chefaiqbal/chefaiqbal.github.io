@@ -157,15 +157,6 @@ input:focus {
     margin: 0; /* Remove any margin */
 }
 
-.progress svg {
-    width: 100%; /* Make SVG responsive to container width */
-    height: 100%; /* Ensure SVG fills the height of the container */
-}
-
-svg {
-    width: 100%; /* Make SVG responsive to container width */
-    height: 100%; /* Ensure SVG fills the height of the container */
-  }
 
   .card {
     background-color: rgba(233, 236, 239, 0.7); /* Set background to #e9ecef with 50% transparency */
